@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LEMUR TIME — three clocks</title>
+<style>
+  body { background:#1E2E24; color:#d8cfae; font-family: Georgia, serif; margin:0; padding:24px; }
+  h1 { font-size:1.4em; letter-spacing:.12em; color:#B08D3E; margin-bottom:4px; }
+  .sub { color:#8a9a7b; font-style:italic; margin-bottom:20px; max-width:760px; }
+  .clock { border:1px solid #3a4a33; background:#141b12; padding:18px 22px; margin-bottom:14px; max-width:712px; }
+  .clock h2 { font-size:.85em; letter-spacing:.2em; color:#B08D3E; margin:0 0 8px; }
+  .time { font-size:2.2em; letter-spacing:.04em; }
+  .note { color:#8a9a7b; font-style:italic; margin-top:8px; font-size:.95em; }
+  .glitch { color:#c25b4a; text-shadow: 2px 0 #c25b4a, -2px 0 #4a7bc2; }
+</style>
+</head>
+<body>
+<h1>LEMUR TIME</h1>
+<div class="sub">Three clocks. One of them is lying.</div>
+
+<div class="clock">
+  <h2>TROOP TIME — Antananarivo, Madagascar</h2>
+  <div class="time" id="troop">--:--:--</div>
+  <div class="note">The troop keeps this one. It is the only honest clock on the page.</div>
+</div>
+
+<div class="clock">
+  <h2>RIFT TIME — years since Madagascar broke away</h2>
+  <div class="time" id="rift">88000000.000000</div>
+  <div class="note">Moves at the speed of geology. Watch it for a while. Feel your impatience become a fossil.</div>
+</div>
+
+<div class="clock">
+  <h2>BOARD TIME — your local time, as permitted</h2>
+  <div class="time" id="board">--:--:--</div>
+  <div class="note">The Board does not believe in sequence. Do not adjust your set; the set is fine. Time is not.</div>
+</div>
+
+<script>
+var riftBase = Date.now();
+function madagascarNow() {
+  var now = new Date();
+  return new Date(now.getTime() + (now.getTimezoneOffset() + 180) * 60000);
+}
+var glitchUntil = 0, glitchOffset = 0, nextGlitch = Date.now() + 5000;
+function tick() {
+  var mad = madagascarNow();
+  document.getElementById('troop').textContent =
+    mad.toLocaleTimeString('en-GB', {hour12: false}) + ' EAT';
+
+  var years = 88000000 + (Date.now() - riftBase) / 31557600000;
+  document.getElementById('rift').textContent = years.toFixed(6);
+
+  var nowMs = Date.now();
+  if (nowMs > nextGlitch) {
+    glitchOffset = (Math.floor(Math.random() * 181) - 90) * 1000;
+    glitchUntil = nowMs + 1500;
+    nextGlitch = nowMs + 6000 + Math.random() * 7000;
+  }
+  var glitching = nowMs < glitchUntil;
+  var b = document.getElementById('board');
+  b.textContent = new Date(nowMs + (glitching ? glitchOffset : 0)).toLocaleTimeString('en-GB', {hour12: false});
+  if (glitching) b.classList.add('glitch'); else b.classList.remove('glitch');
+}
+setInterval(tick, 250);
+tick();
+</script>
+</body>
+</html>
