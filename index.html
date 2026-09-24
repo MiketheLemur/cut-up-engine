@@ -3,68 +3,76 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LEMUR TIME — three clocks</title>
+<title>CUT-UP ENGINE — a time-war tactic</title>
 <style>
   body { background:#1E2E24; color:#d8cfae; font-family: Georgia, serif; margin:0; padding:24px; }
   h1 { font-size:1.4em; letter-spacing:.12em; color:#B08D3E; margin-bottom:4px; }
-  .sub { color:#8a9a7b; font-style:italic; margin-bottom:20px; max-width:760px; }
-  .clock { border:1px solid #3a4a33; background:#141b12; padding:18px 22px; margin-bottom:14px; max-width:712px; }
-  .clock h2 { font-size:.85em; letter-spacing:.2em; color:#B08D3E; margin:0 0 8px; }
-  .time { font-size:2.2em; letter-spacing:.04em; }
-  .note { color:#8a9a7b; font-style:italic; margin-top:8px; font-size:.95em; }
-  .glitch { color:#c25b4a; text-shadow: 2px 0 #c25b4a, -2px 0 #4a7bc2; }
+  .sub { color:#8a9a7b; font-style:italic; margin-bottom:16px; max-width:760px; }
+  label { display:block; margin:14px 0 6px; font-size:.85em; letter-spacing:.15em; color:#B08D3E; }
+  textarea { width:100%; max-width:760px; background:#141b12; color:#d8cfae; border:1px solid #3a4a33; font-family:Georgia, serif; font-size:1em; padding:10px; box-sizing:border-box; }
+  #out { max-width:728px; border:1px solid #3a4a33; background:#141b12; padding:16px; line-height:1.7; min-height:120px; white-space:pre-wrap; }
+  button { background:#B08D3E; color:#1E2E24; border:none; padding:10px 18px; font-family:inherit; font-size:1em; cursor:pointer; margin:12px 8px 0 0; }
+  button:hover { background:#c9a44f; }
+  input[type=range] { width:200px; vertical-align:middle; }
 </style>
 </head>
 <body>
-<h1>LEMUR TIME</h1>
-<div class="sub">Three clocks. One of them is lying.</div>
+<h1>CUT-UP ENGINE</h1>
+<div class="sub">Burroughs said the cut-up breaks the prerecorded universe. This is a small machine for breaking it. Feed it text, set the blade width, cut.</div>
 
-<div class="clock">
-  <h2>TROOP TIME — Antananarivo, Madagascar</h2>
-  <div class="time" id="troop">--:--:--</div>
-  <div class="note">The troop keeps this one. It is the only honest clock on the page.</div>
+<label>SOURCE TEXT</label>
+<textarea id="src" rows="8">The troop has no leader, only mothers. The forest has no center, only signal. A lemur reads the air the way you read a feed, except the air does not lie about what it wants. Time here is not a line but a thicket. Every path through the thicket is taken by something with teeth. The mainlanders brought clocks and then wondered why nothing obeyed them. We obey the mothers, the fruiting season, and the smell of rain two valleys over. Everything else is a rumor the future started about itself.</textarea>
+
+<label>SECOND TEXT (for fold-in)</label>
+<textarea id="src2" rows="5">FIELD MANUAL, PAGE 9: When the signal degrades, do not increase the volume. Increase the number of ears. A message repeated often enough becomes weather. The Rift does not transmit; it remembers forward. If you find a footprint facing both directions, follow the one that is not yours.</textarea>
+
+<label>BLADE WIDTH (words per chunk): <span id="csVal">5</span></label>
+<input type="range" id="chunk" min="1" max="12" value="5">
+
+<div>
+  <button id="cutBtn">CUT</button>
+  <button id="foldBtn">FOLD-IN</button>
 </div>
 
-<div class="clock">
-  <h2>RIFT TIME — years since Madagascar broke away</h2>
-  <div class="time" id="rift">88000000.000000</div>
-  <div class="note">Moves at the speed of geology. Watch it for a while. Feel your impatience become a fossil.</div>
-</div>
-
-<div class="clock">
-  <h2>BOARD TIME — your local time, as permitted</h2>
-  <div class="time" id="board">--:--:--</div>
-  <div class="note">The Board does not believe in sequence. Do not adjust your set; the set is fine. Time is not.</div>
-</div>
+<label>OUTPUT</label>
+<div id="out">Nothing cut yet. The timeline remains prerecorded.</div>
 
 <script>
-var riftBase = Date.now();
-function madagascarNow() {
-  var now = new Date();
-  return new Date(now.getTime() + (now.getTimezoneOffset() + 180) * 60000);
+function wordsOf(id) {
+  return document.getElementById(id).value.split(/\s+/).filter(function(w) { return w.length > 0; });
 }
-var glitchUntil = 0, glitchOffset = 0, nextGlitch = Date.now() + 5000;
-function tick() {
-  var mad = madagascarNow();
-  document.getElementById('troop').textContent =
-    mad.toLocaleTimeString('en-GB', {hour12: false}) + ' EAT';
-
-  var years = 88000000 + (Date.now() - riftBase) / 31557600000;
-  document.getElementById('rift').textContent = years.toFixed(6);
-
-  var nowMs = Date.now();
-  if (nowMs > nextGlitch) {
-    glitchOffset = (Math.floor(Math.random() * 181) - 90) * 1000;
-    glitchUntil = nowMs + 1500;
-    nextGlitch = nowMs + 6000 + Math.random() * 7000;
+function chunkUp(words, n) {
+  var out = [];
+  for (var i = 0; i < words.length; i += n) out.push(words.slice(i, i + n).join(' '));
+  return out;
+}
+function shuffle(a) {
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
   }
-  var glitching = nowMs < glitchUntil;
-  var b = document.getElementById('board');
-  b.textContent = new Date(nowMs + (glitching ? glitchOffset : 0)).toLocaleTimeString('en-GB', {hour12: false});
-  if (glitching) b.classList.add('glitch'); else b.classList.remove('glitch');
+  return a;
 }
-setInterval(tick, 250);
-tick();
+function blade() { return parseInt(document.getElementById('chunk').value, 10); }
+
+document.getElementById('chunk').oninput = function() {
+  document.getElementById('csVal').textContent = this.value;
+};
+document.getElementById('cutBtn').onclick = function() {
+  var c = shuffle(chunkUp(wordsOf('src'), blade()));
+  document.getElementById('out').textContent = c.join(' ');
+};
+document.getElementById('foldBtn').onclick = function() {
+  var a = chunkUp(wordsOf('src'), blade());
+  var b = chunkUp(wordsOf('src2'), blade());
+  var out = [];
+  var m = Math.max(a.length, b.length);
+  for (var i = 0; i < m; i++) {
+    if (a[i]) out.push(a[i]);
+    if (b[i]) out.push(b[i]);
+  }
+  document.getElementById('out').textContent = shuffle(out).join(' ');
+};
 </script>
 </body>
 </html>

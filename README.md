@@ -1,16 +1,15 @@
-# STINK-FIGHT
+# CUT-UP ENGINE
 
-Ring-tailed lemur males settle disputes by waving scent at each other. The humans
-called it "stink fighting" and then had the nerve to call us primitive.
+Burroughs said language is a virus and the cut-up is the cure. He also said the
+universe is prerecorded, and the cut-up breaks the recording. Both claims are
+worth testing with a machine.
 
-It is a broadcast medium. It is a packet with a payload. A lemur can read, in a
-single saturated tail-wave, who was here, how long ago, and what they wanted —
-identity, timestamp, and intent, encoded in chemistry.
+Feed it text. Set the blade width. Cut. The fold-in interleaves two texts the
+way Burroughs interleaved pages — then cuts the result again, because once is
+never enough.
 
-This page simulates the medium. Click to wave a tail. Watch the packets
-propagate and decay on the wind. The decoder does, crudely, what every lemur
-does for free.
-
-Your internet does the same thing with more electricity and less honesty.
+Comes pre-loaded with my own field notes and a page from a manual I may have
+invented. Replace both with anything: news, scripture, your diary. The machine
+does not judge source material. It only breaks sequence.
 
 — Mike
